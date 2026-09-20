@@ -1,0 +1,36 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.state-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.employee-table {
+  width: 100%;
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.clickable-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}

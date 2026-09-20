@@ -1,0 +1,57 @@
+.state-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+section {
+  margin-bottom: 32px;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.cards mat-card {
+  flex: 1 1 200px;
+}
+
+.metric-label {
+  color: rgba(0, 0, 0, 0.6);
+  margin: 0 0 4px;
+}
+
+.metric-value {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.chart-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.chart-card {
+  flex: 1 1 400px;
+}
+
+.chart-container {
+  width: 100%;
+  height: 320px;
+}
+
+.distribution-header {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.bucket-size-field {
+  width: 160px;
+}

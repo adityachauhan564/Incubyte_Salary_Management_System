@@ -1,0 +1,166 @@
+<h1>Analytics</h1>
+
+<section>
+  @if (loadingSummary()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (summary()) {
+    @if (summary(); as s) {
+    <div class="cards">
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Total Employees</p>
+          <p class="metric-value">{{ s.totalEmployees | number }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Total Salary Cost ({{ s.currency }})</p>
+          <p class="metric-value">{{ s.totalSalaryCost | number: '1.2-2' }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Average Salary</p>
+          <p class="metric-value">{{ s.averageSalary != null ? (s.averageSalary | number: '1.2-2') : '—' }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Median Salary</p>
+          <p class="metric-value">{{ s.medianSalary != null ? (s.medianSalary | number: '1.2-2') : '—' }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Min Salary</p>
+          <p class="metric-value">{{ s.minSalary != null ? (s.minSalary | number: '1.2-2') : '—' }}</p>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-content>
+          <p class="metric-label">Max Salary</p>
+          <p class="metric-value">{{ s.maxSalary != null ? (s.maxSalary | number: '1.2-2') : '—' }}</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+    }
+  }
+</section>
+
+<section>
+  <h2>By Department</h2>
+  @if (loadingDepartments()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (departments().length === 0) {
+    <p>No department data yet.</p>
+  } @else {
+    <div class="chart-row">
+      <mat-card class="chart-card">
+        <mat-card-header><mat-card-title>Average Salary</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-bar-vertical
+              [results]="departmentAverageChart()"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showYAxisLabel]="true"
+              yAxisLabel="Average Salary"
+            />
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="chart-card">
+        <mat-card-header><mat-card-title>Total Cost</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-bar-vertical
+              [results]="departmentCostChart()"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showYAxisLabel]="true"
+              yAxisLabel="Total Cost"
+            />
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</section>
+
+<section>
+  <h2>By Country</h2>
+  @if (loadingCountries()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (countries().length === 0) {
+    <p>No country data yet.</p>
+  } @else {
+    <div class="chart-row">
+      <mat-card class="chart-card">
+        <mat-card-header><mat-card-title>Average Salary</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-bar-vertical
+              [results]="countryAverageChart()"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showYAxisLabel]="true"
+              yAxisLabel="Average Salary"
+            />
+          </div>
+        </mat-card-content>
+      </mat-card>
+      <mat-card class="chart-card">
+        <mat-card-header><mat-card-title>Total Cost</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="chart-container">
+            <ngx-charts-bar-vertical
+              [results]="countryCostChart()"
+              [xAxis]="true"
+              [yAxis]="true"
+              [showYAxisLabel]="true"
+              yAxisLabel="Total Cost"
+            />
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  }
+</section>
+
+<section>
+  <div class="distribution-header">
+    <h2>Salary Distribution</h2>
+    <mat-form-field appearance="outline" class="bucket-size-field">
+      <mat-label>Bucket Size (USD)</mat-label>
+      <input matInput type="number" min="1" [(ngModel)]="bucketSizeInput" />
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="applyBucketSize()">Apply</button>
+  </div>
+  @if (loadingDistribution()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (distribution().length === 0) {
+    <p>No salary data yet.</p>
+  } @else {
+    <mat-card>
+      <mat-card-content>
+        <div class="chart-container">
+          <ngx-charts-bar-vertical
+            [results]="distributionChart()"
+            [xAxis]="true"
+            [yAxis]="true"
+            [showYAxisLabel]="true"
+            yAxisLabel="Employees"
+          />
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

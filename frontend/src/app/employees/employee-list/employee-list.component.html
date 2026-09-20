@@ -1,0 +1,77 @@
+<h1>Employees</h1>
+
+<form class="filters" (ngSubmit)="applyFilters()">
+  <mat-form-field appearance="outline">
+    <mat-label>Search by name</mat-label>
+    <input matInput [(ngModel)]="searchTerm" name="searchTerm" placeholder="e.g. Ada" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Country</mat-label>
+    <input matInput [(ngModel)]="country" name="country" placeholder="Exact match, e.g. United Kingdom" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Department</mat-label>
+    <input matInput [(ngModel)]="department" name="department" placeholder="Exact match, e.g. Engineering" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Job title</mat-label>
+    <input matInput [(ngModel)]="jobTitle" name="jobTitle" placeholder="Exact match" />
+  </mat-form-field>
+
+  <div class="filter-actions">
+    <button mat-flat-button color="primary" type="submit">Search</button>
+    <button mat-stroked-button type="button" (click)="clearFilters()">Clear</button>
+  </div>
+</form>
+
+@if (loading()) {
+  <div class="state-container">
+    <mat-spinner diameter="40" />
+  </div>
+} @else if (loadFailed()) {
+  <div class="state-container">
+    <p>Failed to load employees. Please try again.</p>
+  </div>
+} @else if (employees().length === 0) {
+  <div class="state-container">
+    <p>No employees match your search.</p>
+  </div>
+} @else {
+  <div class="table-wrapper">
+  <table mat-table [dataSource]="employees()" class="employee-table">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef>Name</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.firstName }} {{ employee.lastName }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="country">
+      <th mat-header-cell *matHeaderCellDef>Country</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.country }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="department">
+      <th mat-header-cell *matHeaderCellDef>Department</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.department }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="jobTitle">
+      <th mat-header-cell *matHeaderCellDef>Job Title</th>
+      <td mat-cell *matCellDef="let employee">{{ employee.jobTitle }}</td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns" (click)="openDetail(row)" class="clickable-row"></tr>
+  </table>
+  </div>
+
+  <mat-paginator
+    [length]="totalElements()"
+    [pageIndex]="pageIndex()"
+    [pageSize]="pageSize()"
+    [pageSizeOptions]="[10, 20, 50]"
+    (page)="onPageChange($event)"
+  />
+}

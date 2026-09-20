@@ -1,0 +1,97 @@
+<a routerLink="/employees">&larr; Back to employees</a>
+
+@if (loadingEmployee()) {
+  <div class="state-container">
+    <mat-spinner diameter="40" />
+  </div>
+} @else if (employeeNotFound()) {
+  <div class="state-container">
+    <p>Employee not found.</p>
+  </div>
+} @else {
+  @if (employee(); as emp) {
+    <h1>{{ emp.firstName }} {{ emp.lastName }}</h1>
+
+    <div class="cards">
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Employee Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <dl>
+            <dt>Country</dt>
+            <dd>{{ emp.country }}</dd>
+            <dt>Department</dt>
+            <dd>{{ emp.department }}</dd>
+            <dt>Job Title</dt>
+            <dd>{{ emp.jobTitle }}</dd>
+          </dl>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>Current Salary</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          @if (loadingCurrentSalary()) {
+            <mat-spinner diameter="32" />
+          } @else {
+            @if (hasCurrentSalary() && currentSalary(); as salary) {
+              <p class="amount">{{ salary.amount | number: '1.2-2' }} {{ salary.currency }}</p>
+              <p class="muted">Effective {{ salary.effectiveDate }}</p>
+            } @else {
+              <p>No current salary record.</p>
+            }
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="history-header">
+      <h2>Salary History</h2>
+      <button mat-flat-button color="primary" (click)="openCreateDialog()">Add Salary Record</button>
+    </div>
+    @if (loadingHistory()) {
+      <div class="state-container">
+        <mat-spinner diameter="40" />
+      </div>
+    } @else if (history().length === 0) {
+      <p>No salary history yet.</p>
+    } @else {
+      <div class="table-wrapper">
+      <table mat-table [dataSource]="history()" class="history-table">
+        <ng-container matColumnDef="effectiveDate">
+          <th mat-header-cell *matHeaderCellDef>Effective Date</th>
+          <td mat-cell *matCellDef="let record">{{ record.effectiveDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let record">{{ record.amount | number: '1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="currency">
+          <th mat-header-cell *matHeaderCellDef>Currency</th>
+          <td mat-cell *matCellDef="let record">{{ record.currency }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Recorded On</th>
+          <td mat-cell *matCellDef="let record">{{ record.createdAt | date: 'medium' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let record">
+            <button mat-button (click)="openCorrectDialog(record)">Correct</button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="historyColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: historyColumns"></tr>
+      </table>
+      </div>
+    }
+  }
+}

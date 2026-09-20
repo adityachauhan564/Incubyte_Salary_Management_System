@@ -1,0 +1,59 @@
+.state-container {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 16px 0 24px;
+}
+
+.cards mat-card {
+  flex: 1 1 280px;
+}
+
+dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+dt {
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+dd {
+  margin: 0;
+}
+
+.amount {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.6);
+  margin: 4px 0 0;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
