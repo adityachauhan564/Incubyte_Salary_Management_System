@@ -4,16 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-This repository currently contains **no application code** — only planning artifacts:
+Scaffolding exists for both apps; feature code (entities, endpoints, UI screens) has not
+been written yet.
 
 - `Incubyte_Task.pdf` — the assessment brief (goal, constraints, grading criteria).
 - `docs/requirements.md` — the one-page requirements doc (scope, non-goals, tech choices).
 - `docs/architecture.md`, `docs/assumptions.md` — currently empty; fill these in as design
   decisions are made.
+- `backend/` — Spring Boot 4.1.1 app generated via Spring Initializr (Java 21, Maven wrapper).
+- `frontend/` — Angular 19 app generated via Angular CLI (routing + SCSS enabled).
 
-There is no git repository initialized yet, and no backend/frontend project scaffolding
-exists. When code is added, this file should be updated with real build/lint/test commands
-and the actual module layout.
+## Commands
+
+### Backend (`backend/`)
+
+- Run the app: `./mvnw spring-boot:run` (Windows: `mvnw.cmd spring-boot:run`)
+- Run all tests: `./mvnw test`
+- Run a single test class: `./mvnw test -Dtest=ClassName`
+- Package: `./mvnw package`
+
+No system-wide Maven is required — always use the wrapper (`mvnw`/`mvnw.cmd`).
+
+### Frontend (`frontend/`)
+
+- Install deps: `npm install`
+- Dev server: `npx ng serve`
+- Run unit tests: `npx ng test`
+- Build: `npx ng build`
+
+Angular CLI is not installed globally — invoke it via `npx ng ...` (or `npm run` scripts) so
+the pinned local version (19.x) is used, matching the installed Node runtime.
+
+## Backend notes
+
+- Package root: `com.incubyte.salary`.
+- SQLite is **not** a standard Spring Initializr dependency — it was wired in manually:
+  `org.xerial:sqlite-jdbc` for the driver and `org.hibernate.orm:hibernate-community-dialects`
+  (version managed by the Spring Boot BOM) for `org.hibernate.community.dialect.SQLiteDialect`.
+- `src/main/resources/application.properties` points at `./data/salary.db` (gitignored;
+  `backend/data/.gitkeep` keeps the directory present). Tests use a separate
+  `src/test/resources/application.properties` pointing at `./data/salary-test.db` with
+  `ddl-auto=create-drop` so tests don't touch dev data.
+- Spring Boot 4 split the old single `spring-boot-starter-test` into per-module test starters
+  (`spring-boot-starter-data-jpa-test`, `spring-boot-starter-webmvc-test`,
+  `spring-boot-starter-validation-test`) — add the matching `-test` starter when a new main
+  starter is introduced, rather than reaching for `spring-boot-starter-test`.
 
 ## What is being built
 
