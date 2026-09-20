@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.stream.Collectors;
@@ -63,6 +64,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DuplicateSalaryRecordException.class)
     public ResponseEntity<ApiError> handleDuplicateSalaryRecord(DuplicateSalaryRecordException ex, HttpServletRequest request) {
         return build(HttpStatus.CONFLICT, "DUPLICATE_SALARY_RECORD", ex.getMessage(), request);
+    }
+
+    /**
+     * Spring throws this when no controller AND no static resource matches
+     * the request - i.e. a genuinely unmapped URL. It already carries its
+     * own intended 404 status, but without this handler it's caught by the
+     * broader Exception.class catch-all below and misreported as a 500.
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiError> handleNoResourceFound(NoResourceFoundException ex, HttpServletRequest request) {
+        return build(HttpStatus.NOT_FOUND, "NOT_FOUND", "No such endpoint.", request);
     }
 
     @ExceptionHandler(Exception.class)
