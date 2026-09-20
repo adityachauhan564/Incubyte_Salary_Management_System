@@ -161,13 +161,28 @@ while normalization allows meaningful cross-country comparisons.
 
 ### Assumption
 
-Currency conversion will use a documented static exchange-rate configuration.
+Currency conversion uses a documented static exchange-rate configuration
+(`ExchangeRateConfig` in the analytics module). Live foreign-exchange data or
+integration with an external FX provider is not required.
 
-Live foreign-exchange data or integration with an external FX provider is not
-required.
+The reporting currency is **USD**. Rates are units of the given currency per
+1 USD:
 
-The reference currency and exchange rates will be explicitly documented as
-part of the implementation.
+| Currency | Units per USD |
+|----------|---------------|
+| USD      | 1.00          |
+| GBP      | 0.80          |
+| EUR      | 0.90          |
+| INR      | 83.00         |
+| CAD      | 1.35          |
+| AUD      | 1.50          |
+| SGD      | 1.30          |
+| BRL      | 5.30          |
+
+These cover the currencies the seed dataset generates. A salary record
+created via the API in a currency outside this table is rejected by
+analytics with a 400 `UNSUPPORTED_CURRENCY` error rather than silently
+mis-converted or excluded.
 
 ### Reasoning
 

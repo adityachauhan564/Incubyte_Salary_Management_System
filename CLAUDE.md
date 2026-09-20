@@ -4,15 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project status
 
-Scaffolding exists for both apps; feature code (entities, endpoints, UI screens) has not
-been written yet.
+Backend is functional end-to-end for employees, salaries, and compensation analytics:
+entities, repositories, DTOs, services, REST controllers, a shared error-handling advice,
+and a deterministic seed mechanism all exist and are tested. No Angular UI screens yet.
+
+### Implemented endpoints
+
+- `GET /api/employees/{id}` — 404 via `EmployeeNotFoundException` if missing.
+- `GET /api/employees?search=&country=&department=&jobTitle=&page=&size=&sort=` — paginated,
+  filtered list; returns `PagedModel<EmployeeResponse>`.
+- `GET /api/employees/{employeeId}/salaries` — full salary history, most recent first.
+- `GET /api/employees/{employeeId}/salary/current` — derived current salary; 404 if none
+  effective yet.
+- `POST /api/employees/{employeeId}/salaries` — creates a new history entry (a raise); 201.
+- `PUT /api/employees/{employeeId}/salaries/{salaryId}` — corrects an existing record's
+  fields in place (not a new history entry); 200. Note: `employeeId` in this path is not
+  currently verified to match the record's actual employee — see `docs/architecture.md`
+  and the increment notes for why that's a known, deliberately-deferred gap.
+
+- `GET /api/analytics/summary` — headcount, total cost, average/median/min/max salary, all
+  normalized to USD.
+- `GET /api/analytics/departments`, `/api/analytics/countries` — per-group headcount, cost,
+  average/min/max (covers both "comparison" and "cost" requirements in one shape).
+- `GET /api/analytics/distribution?bucketSize=25000` — fixed-width salary buckets, gap-filled
+  with zero counts.
+
+All errors return the same JSON shape (`timestamp`, `status`, `error`, `message`, `path`)
+via `common/exception/GlobalExceptionHandler`; see `docs/architecture.md` §7.1. Exchange
+rates for analytics normalization are documented in `docs/assumptions.md` §7.
 
 - `Incubyte_Task.pdf` — the assessment brief (goal, constraints, grading criteria).
 - `docs/requirements.md` — the one-page requirements doc (scope, non-goals, tech choices).
-- `docs/architecture.md`, `docs/assumptions.md` — currently empty; fill these in as design
-  decisions are made.
+- `docs/architecture.md` — module structure, entity design, and implementation decisions
+  (kept up to date as increments land).
+- `docs/assumptions.md` — scope decisions and reasoning where requirements leave details open.
 - `backend/` — Spring Boot 4.1.1 app generated via Spring Initializr (Java 21, Maven wrapper).
-- `frontend/` — Angular 19 app generated via Angular CLI (routing + SCSS enabled).
+- `frontend/` — Angular 19 app generated via Angular CLI (routing + SCSS enabled); not yet
+  wired to the backend.
+
+### Seeding local data
+
+`./mvnw spring-boot:run -Dspring-boot.run.profiles=seed` populates `backend/data/salary.db`
+with ~10,000 synthetic employees and salary history (override with
+`-Dspring-boot.run.arguments="--app.seed.employee-count=500"`). Safe to re-run — it skips
+seeding if employees already exist. See `docs/architecture.md` for how the seed module is
+structured.
 
 ## Commands
 
