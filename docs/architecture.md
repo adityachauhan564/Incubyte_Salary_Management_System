@@ -380,6 +380,37 @@ consistent with the Employee/Salary ones:
   "number" } }`) rather than serializing `Page<T>` directly, which leaks
   internal Spring Data structure and isn't a stable contract.
 
+### 7.2 API Documentation (OpenAPI / Swagger)
+
+**Why added:** with 9 endpoints across three modules, hand-written API docs
+go stale the first time an endpoint changes. `springdoc-openapi` generates
+the OpenAPI document directly from the controllers/DTOs already in place
+(`@Operation`, `@ApiResponse`, `@Schema` annotations), so the documentation
+can't drift from the actual request/response shapes and status codes -
+there is nothing to keep manually in sync.
+
+**Dependency:** `org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.1`.
+This is the Spring Boot 4-compatible major line - springdoc 2.x targets
+Spring Boot 3 / Spring Framework 6 and will not resolve cleanly against
+this project's Spring Boot 4.1.1 (its 3.x POM references the restructured
+Boot 4 module names, e.g. `spring-boot-tomcat`, `spring-boot-health`,
+confirmed by inspecting it directly rather than assumed).
+
+**Access locally:**
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html` (or
+  `/swagger-ui.html`, which redirects there)
+- Raw OpenAPI JSON: `http://localhost:8080/v3/api-docs`
+
+Both are springdoc's defaults - no custom path configuration was added, to
+keep this minimal. No security scheme is declared (`common/config/OpenApiConfig.java`):
+this API has no authentication at all (out of scope for the assessment - see
+`docs/assumptions.md` #1), so both endpoints are open, which is fine for
+local/dev use but would need `springdoc.api-docs.enabled=false` and
+`springdoc.swagger-ui.enabled=false` (or an equivalent gate) before ever
+exposing this outside a trusted network - noted here rather than acted on,
+since introducing environment profiles that don't otherwise exist yet in
+this project would be scope beyond what was asked.
+
 ## 8. Performance Considerations
 
 The application is expected to handle approximately 10,000 employees.

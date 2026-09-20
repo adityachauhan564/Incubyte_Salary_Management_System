@@ -33,6 +33,12 @@ All errors return the same JSON shape (`timestamp`, `status`, `error`, `message`
 via `common/exception/GlobalExceptionHandler`; see `docs/architecture.md` §7.1. Exchange
 rates for analytics normalization are documented in `docs/assumptions.md` §7.
 
+### API documentation
+
+Swagger UI: `http://localhost:8080/swagger-ui/index.html`. Raw OpenAPI JSON:
+`http://localhost:8080/v3/api-docs`. See `docs/architecture.md` §7.2 for why it was added
+and the dependency version rationale (`springdoc-openapi` 3.x, not 2.x — Spring Boot 4 only).
+
 - `Incubyte_Task.pdf` — the assessment brief (goal, constraints, grading criteria).
 - `docs/requirements.md` — the one-page requirements doc (scope, non-goals, tech choices).
 - `docs/architecture.md` — module structure, entity design, and implementation decisions
