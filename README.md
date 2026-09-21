@@ -12,9 +12,12 @@ guided the implementation.
 
 ## Status
 
-- **Backend**: functional end-to-end — employees, salary history, and
-  compensation analytics, all documented and tested.
-- **Frontend**: not yet implemented (Angular CLI scaffold only).
+Functional end-to-end, backend and frontend:
+
+- **Backend**: employees, salary history, and compensation analytics, all
+  documented and tested.
+- **Frontend**: employee search/browse, salary history/create/correct, and
+  an analytics dashboard, all built against the live backend API and tested.
 
 ## Tech Stack
 
@@ -24,27 +27,40 @@ guided the implementation.
 | Persistence | SQLite, Spring Data JPA / Hibernate |
 | API docs | springdoc-openapi (Swagger UI) |
 | Monitoring | Spring Boot Actuator |
-| Testing | JUnit 5, Mockito, AssertJ |
-| Frontend (planned) | Angular 19, TypeScript, RxJS |
+| Backend testing | JUnit 5, Mockito, AssertJ |
+| Frontend | Angular 19 (standalone components, Signals), TypeScript, Angular Material, ngx-charts |
+| Frontend testing | Karma, Jasmine |
 
 ## Project Structure
 
 ```
 backend/    Spring Boot API (Java 21, Maven)
-frontend/   Angular app (scaffold only, not yet built out)
+frontend/   Angular app (Angular 19, feature-based folders)
 docs/       Requirements, architecture, and assumptions
 ```
 
 See [`docs/architecture.md`](docs/architecture.md) for the full backend
-package layout and design rationale.
+package layout and design rationale, and
+[`docs/superpowers/specs/2026-09-20-angular-frontend-design.md`](docs/superpowers/specs/2026-09-20-angular-frontend-design.md)
+for the frontend's design decisions.
+
+The frontend mirrors the backend's package-by-feature convention:
+
+```
+frontend/src/app/
+├── core/        HTTP error interceptor, TS models mirroring backend DTOs
+├── employees/   Employee list (search/filter/pagination) and detail view
+├── salary/      Salary service, create/correct dialog
+└── analytics/   Analytics dashboard (stat cards + ngx-charts)
+```
 
 ## Getting Started
 
 ### Prerequisites
 
 - Java 21
-- Node.js (for the frontend scaffold; no system-wide Maven or Angular CLI
-  needed — both projects use their own wrappers)
+- Node.js (no system-wide Maven or Angular CLI needed — both projects use
+  their own wrappers, invoke the frontend's via `npx ng ...`)
 
 ### Run the backend
 
@@ -68,20 +84,42 @@ cd backend
 Safe to re-run — seeding is skipped if employees already exist. Override
 the count with `-Dspring-boot.run.arguments="--app.seed.employee-count=500"`.
 
-### Run the tests
+### Run the backend tests
 
 ```bash
 cd backend
 ./mvnw test
 ```
 
-### Frontend (scaffold)
+### Run the frontend
+
+The backend must already be running on `http://localhost:8080` — the dev
+server proxies `/api` and `/actuator` requests to it
+(`frontend/proxy.conf.json`), so no CORS configuration is needed.
 
 ```bash
 cd frontend
 npm install
 npx ng serve
 ```
+
+The app starts on `http://localhost:4200`.
+
+### Run the frontend tests
+
+```bash
+cd frontend
+npx ng test
+```
+
+### Build the frontend for production
+
+```bash
+cd frontend
+npx ng build
+```
+
+Output is written to `frontend/dist/frontend`.
 
 ## API Documentation
 
@@ -132,6 +170,13 @@ schemas and status codes are documented in Swagger UI.
   documented exchange-rate table — no live FX integration.
 - **Modular monolith**, organized by feature (`employee/`, `salary/`,
   `analytics/`) rather than by technical layer.
+- **Angular Signals + plain services** for frontend state, not NgRx — the
+  app is a handful of CRUD screens and dashboards, not complex enough to
+  justify a state-management library.
+- **The backend is the frontend's source of truth**: all TypeScript models
+  mirror the backend DTOs exactly, and a dev-server proxy
+  (`frontend/proxy.conf.json`) forwards `/api`/`/actuator` calls instead of
+  adding CORS configuration to the backend.
 
 See `docs/architecture.md` for the full reasoning behind these and other
 decisions.
@@ -143,4 +188,10 @@ decisions.
 - `PUT .../salaries/{salaryId}` does not verify that the record belongs to
   the `employeeId` in the path.
 - No API versioning.
-- Frontend is not yet implemented.
+- Employee list filters (country/department/job title) are free-text
+  inputs requiring an exact match, not dropdowns — there's no backend
+  endpoint for distinct filter values yet.
+- A malformed employee id in the URL (e.g. `/employees/abc`) surfaces as a
+  backend 500 rather than a 400 (an unhandled path-variable type-mismatch
+  exception); the frontend absorbs it into the same "Employee not found"
+  state either way, so it isn't user-visible.
